@@ -1,0 +1,119 @@
+#!/bin/sh
+
+REMOTE_DIR="/home/$USERNAME/sandbox/slack-monolol"
+REMOTE_SERVER="devel-web21"
+PRIVATE_KEY_PATH="/cygdrive/c/Users/$USERNAME/.ssh/id_rsa"
+
+function lessCompilation {
+    echo -e '\e[32m--- Compiling less files ---\e[0m'
+    # /usr/bin/ssh $USERNAME@$REMOTE_SERVER "cd $REMOTE_DIR && ./lessc"
+    /usr/bin/ssh $USERNAME@$REMOTE_SERVER "cd $REMOTE_DIR && ./vendor/bin/lessc assets/less/build.less > assets/compiled/domisys.css"
+}
+
+function supervisor {
+    echo -e '\e[32m--- Generating Supervisord configuration files ---\e[0m'
+    /usr/bin/ssh $USERNAME@$REMOTE_SERVER "cd $REMOTE_DIR && /usr/bin/env php package generate:supervisord:configuration --destination=var/system/supervisor --server=worker"
+}
+
+function assetic {
+    echo -e '\e[32m--- Dumping assets ---\e[0m'
+    /usr/bin/ssh $USERNAME@$REMOTE_SERVER "cd $REMOTE_DIR && php package assetic:dump"
+}
+
+function showHelp {
+    echo -e "Sync tool"
+    echo -e " "
+    echo -e "options:"
+    echo -e "-d, --delete              \e[32mDelete extraneous files from dest dirs\e[0m"
+    echo -e "-f, --force               \e[32mDelete all distant files before sync\e[0m"
+    echo -e "-l, --less                \e[32mRun the less compilation after sync\e[0m"
+    echo -e "-k, --karma               \e[32mRun the configuration hydration after sync\e[0m"
+    echo -e "-a, --assetic             \e[32mDump assets after sync\e[0m"
+    echo -e "--all                     \e[32mThe complete bundle, equivalent to -f -l -k -a\e[0m"
+}
+
+function clearRemoteDir {
+    echo -e "\e[32m--- Cleaning remote directory ---\e[0m"
+    /usr/bin/ssh $USERNAME@$REMOTE_SERVER "rm -rf $REMOTE_DIR/*"
+}
+
+function karma {
+    echo -e '\e[32m--- hydrating configuration values ---\e[0m'
+    /usr/bin/ssh $USERNAME@$REMOTE_SERVER "cd $REMOTE_DIR && vendor/bin/karma hydrate -e dev"
+}
+
+while test $# -gt 0; do
+    case "$1" in
+        -h|--help)
+            showHelp
+            exit 0
+            ;;
+            --all)
+                ASSETIC=true
+                FORCE=true
+                LESSC=true
+                KARMA=true
+                SUPERVISOR=true
+                shift
+                ;;
+            -a|--assetic)
+                ASSETIC=true
+                shift
+                ;;
+            -d|--delete)
+                DELETE="--delete"
+                shift
+                ;;
+            -f|--force)
+                FORCE=true
+                shift
+                ;;
+            -k|--karma)
+                KARMA=true
+                shift
+                ;;
+            -l|--less)
+                LESSC=true
+                shift
+                ;;
+            -s|--supervisor)
+                SUPERVISOR=true
+                shift
+                ;;
+            -7|--php7)
+                REMOTE_SERVER="192.168.1.20"
+                shift
+                ;;
+        *)
+            break
+            ;;
+    esac
+done
+
+if [ $FORCE ]; then
+    clearRemoteDir
+fi
+
+echo -e "\e[32m--- Synchronizing to \e[33m$REMOTE_SERVER\e[32m ---\e[0m"
+/usr/bin/rsync -avz -e "/usr/bin/ssh -i ${PRIVATE_KEY_PATH}" --exclude-from 'sync-exclusions' $DELETE . $USERNAME@$REMOTE_SERVER:$REMOTE_DIR
+
+echo -e '\e[32m--- Setting directory rights ---\e[0m'
+ssh $USERNAME@$REMOTE_SERVER "cd $REMOTE_DIR && chmod 777 -Rf var"
+
+if [ $KARMA ]; then
+    karma
+fi
+
+if [ $SUPERVISOR ]; then
+    supervisor
+fi
+
+if [ $LESSC ]; then
+    lessCompilation
+fi
+
+if [ $ASSETIC ]; then
+    assetic
+fi
+
+exit 0;

@@ -1,0 +1,6 @@
+.git
+sync-exclusions
+var
+www/js
+www/css
+www/fonts
