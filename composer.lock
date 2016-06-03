@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f8c11ea23528d69d6ee593e9acd82319",
-    "content-hash": "9f90834249db3a93d4f8d4b30fcb2f1d",
+    "hash": "47f89132f660b87a0339af81272188f3",
+    "content-hash": "26489b05dba7c66d8945fb6a16bb4cbc",
     "packages": [
         {
             "name": "cpliakas/git-wrapper",
@@ -1081,16 +1081,16 @@
         },
         {
             "name": "phpointless/monolol",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPointless/monolol.git",
-                "reference": "59c0e9358f8ed4bdfc360fe30f765bfba29f148d"
+                "reference": "daf227aa8b8ecc3f05d2a4236f1712dcf75145db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPointless/monolol/zipball/59c0e9358f8ed4bdfc360fe30f765bfba29f148d",
-                "reference": "59c0e9358f8ed4bdfc360fe30f765bfba29f148d",
+                "url": "https://api.github.com/repos/PHPointless/monolol/zipball/daf227aa8b8ecc3f05d2a4236f1712dcf75145db",
+                "reference": "daf227aa8b8ecc3f05d2a4236f1712dcf75145db",
                 "shasum": ""
             },
             "require": {
@@ -1125,7 +1125,7 @@
                 "PSR3",
                 "lol-gging"
             ],
-            "time": "2016-01-13 12:49:03"
+            "time": "2016-01-23 11:27:18"
         },
         {
             "name": "pimple/pimple",

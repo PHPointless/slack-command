@@ -16,7 +16,7 @@
         "twbs/bootstrap" : "~3.3",
         "oyejorge/less.php" : "~1.7",
         "fortawesome/font-awesome": "~4.3",
-        "phpointless/monolol": "^1.1"
+        "phpointless/monolol": "^1.2"
     },
     "autoload" : {
         "psr-4" : {
