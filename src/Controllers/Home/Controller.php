@@ -25,15 +25,56 @@ class Controller
 
     public function lolifyAction()
     {
-        $lolifier = $this->lolifiers[array_rand($this->lolifiers)];
-
         $text = $this->request->get('text');
+        
+        list($text, $lolifier) = $this->extractLolifier($text);
 
         if(! empty($text))
         {
-            $text = $lolifier->lolify(['message' => $text]);
+            $textLolified = $lolifier->lolify(['message' => $text]);
+            
+            $text = $textLolified['message'];
         }
 
-        return new Response($text['message']);
+        return new Response($text);
+    }
+    
+    private function extractLolifier($text)
+    {
+        $lolifier = $this->lolifiers[array_rand($this->lolifiers)];
+
+        $lolifierName = $this->extractLolifierName($text);
+        if(null !== $lolifierName)
+        {
+            if(array_key_exists(strtolower($lolifierName), $this->lolifiers))
+            {
+                $text = $this->cleanTextFromLolifierName($text, $lolifierName);
+
+                $lolifier = $this->lolifiers[$lolifierName];
+            }
+        }
+
+        return [
+            $text,
+            $lolifier,
+        ];
+    }
+    
+    private function cleanTextFromLolifierName($text, $lolifierName)
+    {
+        return preg_replace("|^$lolifierName\s{1,}(.*)|i", '${1}', $text);
+    }
+
+    private function extractLolifierName($text)
+    {
+        $lolifierName = null;
+        $words = preg_split('~\s~', $text);
+
+        if(count($words) > 1)
+        {
+            $lolifierName = $words[0];
+        }
+        
+        return $lolifierName;
     }
 }
