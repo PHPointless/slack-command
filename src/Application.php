@@ -23,6 +23,14 @@ class Application extends AbstractApplication
 
             return [
                 'tourette' => new Lolifiers\Tourette($swearWordsProvider),
+                'yell' => new Lolifiers\Yell(),
+                'mirror' => new Lolifiers\Mirror(),
+                'nyancat' => new Lolifiers\NyanCat(),
+                'nyan' => new Lolifiers\NyanCat(),
+                'shuffle' => new Lolifiers\Shuffle(),
+                'hangman' => new Lolifiers\Hangman(),
+                'blackout' => new Lolifiers\Blackout(),
+                'julian' => new Lolifiers\Blackout(),
             ];
         });
     }
